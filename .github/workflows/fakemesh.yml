@@ -28,7 +28,13 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          ./scripts/feeds install libustream-ssl lua
+          ./scripts/feeds install libustream-ssl lua libdeflate
+
+      - name: Build OpenWRT host utilities
+        run: |
+          cd openwrt
+          make tools/install -j$(nproc)
+          make toolchain/install -j$(nproc)
 
       - name: Add luci-app-fakemesh to OpenWRT package sources
         run: |
