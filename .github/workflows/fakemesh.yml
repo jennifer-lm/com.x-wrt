@@ -28,6 +28,7 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+          ./scripts/feeds install libustream-ssl
 
       - name: Add luci-app-fakemesh to OpenWRT package sources
         run: |
@@ -38,8 +39,8 @@ jobs:
       - name: Configure build
         run: |
           cd openwrt
-          make menuconfig
           echo -e "CONFIG_PACKAGE_luci-app-fakemesh=m" >> .config
+          make defconfig
 
       - name: Compile the package
         run: |
