@@ -1,0 +1,53 @@
+name: Build luci-app-fakemesh
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev gawk git subversion python3 wget
+
+      - name: Clone OpenWRT SDK
+        run: |
+          git clone https://git.openwrt.org/openwrt/openwrt.git
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Add luci-app-fakemesh to OpenWRT package sources
+        run: |
+          cd openwrt/package
+          git clone https://github.com/jennifer-lm/com.x-wrt.git
+          mv com.x-wrt/luci-app-fakemesh .
+
+      - name: Configure build
+        run: |
+          cd openwrt
+          make menuconfig
+          echo -e "CONFIG_PACKAGE_luci-app-fakemesh=m" >> .config
+
+      - name: Compile the package
+        run: |
+          cd openwrt
+          make package/luci-app-fakemesh/compile V=s
+
+      - name: Upload compiled package
+        uses: actions/upload-artifact@v3
+        with:
+          name: luci-app-fakemesh-ipk
+          path: openwrt/bin/packages/**/base/*.ipk
