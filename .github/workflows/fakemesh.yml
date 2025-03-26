@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential libncurses5-dev gawk git subversion python3 wget
+          sudo apt install -y build-essential libncurses5-dev gawk git subversion python3 wget libdeflate-dev
 
       - name: Clone OpenWRT SDK
         run: |
@@ -28,7 +28,7 @@ jobs:
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          ./scripts/feeds install libustream-ssl
+          ./scripts/feeds install libustream-ssl lua
 
       - name: Add luci-app-fakemesh to OpenWRT package sources
         run: |
